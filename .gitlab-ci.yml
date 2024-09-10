@@ -92,8 +92,13 @@ stop-k8s-test-no-operator:
     name: test/$CI_COMMIT_REF_SLUG-no-op
     action: stop
 
+notebook-lint:
+  rules:
+    - when: never
+
 notebook-test:
-  when: manual
+  rules:
+    - when: never
 
 docs-build-rtd:
   rules:

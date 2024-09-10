@@ -89,31 +89,8 @@ package: helm-pre-publish ## package charts
 	rm -rf ./tmp
 
 
-helm-pre-publish: ## hook before helm chart publish
-	@echo "helm-pre-publish: generating charts/ska-tango-base/values.yaml"
-	@cd charts/ska-tango-base && bash ./values.yaml.sh
-
-helm-pre-build: helm-pre-publish
-
-helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
-
-# use pre update hook to update chart values
-k8s-pre-install-chart:
-	make helm-pre-publish
-	@echo "k8s-pre-install-chart: setting up charts/values.yaml"
-	@cd charts; \
-	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
-	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml
-
-k8s-pre-template-chart:
-	make helm-pre-publish
-
-k8s-pre-test:
-	@echo "k8s-pre-test: setting up tests/values.yaml"
-	cp charts/ska-tango-base/values.yaml tests/tango_values.yaml
-
 # install helm plugin from https://github.com/quintush/helm-unittest
-k8s-chart-test: helm-pre-publish
+k8s-chart-test:
 	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
 	mkdir -p charts/build; \
 	helm unittest charts/ska-tango-base/ --with-subchart \
