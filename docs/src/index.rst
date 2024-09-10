@@ -3,17 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-SKA Docker Images
+SKA TANGO Charts
 =================
 
-This project defines a set of Docker images and Docker compose files
-that are useful for TANGO control system development.
+This project defines a set of helm charts that are useful for TANGO control system development in a k8s context.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   docker_images
    helm_charts
    README
 
