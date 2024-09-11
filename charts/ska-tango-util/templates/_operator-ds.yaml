@@ -183,9 +183,10 @@ spec:
 {{- $context := dict "deviceserver" $deviceserver "DEBUG" $chart.Values.global.DEBUG }}
 {{- include "ska-tango-util.entrypoints-script.tpl" $context | nindent 4 }}
 {{- end }}
-{{- if ($deviceserver.depends_on) }}
+{{- $dependencies := concat ($deviceserver.depends_on | default list) ($instance.depends_on | default list)}}
+{{- if $dependencies }}
   dependsOn:
-{{- range $index, $device := $deviceserver.depends_on }}
+{{- range $index, $device := $dependencies }}
   - "{{ coalesce $device.device $device.host | toString }}"
 {{- end }}
 {{- end }}

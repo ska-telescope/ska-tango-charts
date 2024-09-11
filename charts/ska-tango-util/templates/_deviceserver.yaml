@@ -104,8 +104,9 @@ spec:
         args:
           - kubectl wait job --for=condition=complete {{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }} --timeout={{ $kubectl_wait_timeout }}
       {{ end }}
-{{ if (.deviceserver.depends_on) }}
-{{ range $index, $device := .deviceserver.depends_on }}
+{{- $dependencies := concat (.deviceserver.depends_on | default list) (.instance.depends_on | default list)}}
+{{- if $dependencies }}
+{{- range $index, $device := $dependencies }}
 {{ if ($device.host) }}
       - name: check-dependencies-{{ $index }}
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
@@ -289,9 +290,10 @@ spec:
 {{ $chart.Files.Get $chart.Values.dsconfig.configuration_file | indent 4 }}
 {{- end }}
   command: "{{ .deviceserver.command }}"
-{{- if (.deviceserver.depends_on) }}
+{{- $dependencies := concat (.deviceserver.depends_on | default list) (.instance.depends_on | default list)}}
+{{- if $dependencies }}
   dependsOn:
-{{- range $index, $device := .deviceserver.depends_on }}
+{{- range $index, $device := $dependencies }}
   - "{{ $device.device | toString }}"
 {{- end }}
 {{- end }}

@@ -168,9 +168,10 @@ spec:
           - -c
         args:
           - kubectl wait job --for=jsonpath='{.status.succeeded}'=1 {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config --timeout={{ $kubectl_wait_timeout }} || ( ! kubectl get job {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config ); echo $?
-{{ if ($deviceserver.depends_on) }}
-{{ range $index, $device := $deviceserver.depends_on }}
-{{ if ($device.host) }}
+{{- $dependencies := concat ($deviceserver.depends_on | default list) ($instance.depends_on | default list)}}
+{{- if $dependencies }}
+{{- range $index, $device := $dependencies }}
+{{- if ($device.host) }}
       - name: check-dependencies-{{ $index }}
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
