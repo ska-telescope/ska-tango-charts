@@ -12,3 +12,7 @@ charts/ska-tango-base/charts/*
 charts/ska-tango-umbrella/charts
 tests/tango_values.yaml
 manifests.yaml
+MANIFEST.skao.int
+charts/ska-tango-base/MANIFEST.skao.int
+charts/ska-tango-util/MANIFEST.skao.int
+charts/*/Chart.lock
