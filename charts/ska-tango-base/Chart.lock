@@ -3,4 +3,4 @@ dependencies:
   repository: file://../ska-tango-util
   version: 0.4.11
 digest: sha256:6f46014b5764422a8e77ed2fc58cdc33032cf863e41c4aa4a562f290537c15fa
-generated: "2024-09-11T09:30:17.495445062+02:00"
+generated: "2024-09-11T09:55:04.585515038+02:00"
