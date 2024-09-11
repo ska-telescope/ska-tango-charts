@@ -294,48 +294,16 @@ spec:
 {{- . | toYaml | nindent 10 }}
 {{- end }}
         livenessProbe:
-          exec:
-            command:
-          {{- range $index_class, $class := $instance.classes }}
-          {{ $num_of_classes := len $instance.classes }}
-          {{ $num_of_classes = sub $num_of_classes 1 }}
-          {{ $num_of_devices := len $class.devices }}
-          {{ $num_of_devices = sub $num_of_devices 1 }}
-          {{- range $index_device, $device := $class.devices }}
-            - tango_admin
-            - --ping-device
-          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - {{ $device.name }}
-            - "&&"
-          {{ else }}
-            - {{ $device.name }}
-          {{ end }}
-          {{ end }}
-          {{ end }}
+          tcpSocket:
+            port: {{ $tango_server_port }}
           initialDelaySeconds: {{ default 0 $lprobe_initial_delay_seconds }}
           periodSeconds: {{ $lprobe_period_seconds }}
           timeoutSeconds: {{ $lprobe_timeout_seconds }}
           successThreshold: {{ $lprobe_success_threshold }}
           failureThreshold: {{ $lprobe_failure_threshold }}
         readinessProbe:
-          exec:
-            command:
-          {{- range $index_class, $class := $instance.classes }}
-          {{ $num_of_classes := len $instance.classes }}
-          {{ $num_of_classes = sub $num_of_classes 1 }}
-          {{ $num_of_devices := len $class.devices }}
-          {{ $num_of_devices = sub $num_of_devices 1 }}
-          {{- range $index_device, $device := $class.devices }}
-            - tango_admin
-            - --ping-device
-          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - {{ $device.name }}
-            - "&&"
-          {{ else }}
-            - {{ $device.name }}
-          {{ end }}
-          {{ end }}
-          {{ end }}
+          tcpSocket:
+            port: {{ $tango_server_port }}
           initialDelaySeconds: {{ default 0 $rprobe_initial_delay_seconds }}
           periodSeconds: {{ $rprobe_period_seconds }}
           timeoutSeconds: {{ $rprobe_timeout_seconds }}

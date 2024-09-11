@@ -359,11 +359,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -387,11 +384,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -419,33 +413,11 @@ tests:
       - isNotEmpty:
           path: spec.template.spec.containers[0].readinessProbe
       - equal:
-          path: spec.template.spec.containers[0].livenessProbe.exec.command
-          value:
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/1
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/2
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/3
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket.port
+          value: 45450
       - equal:
-          path: spec.template.spec.containers[0].readinessProbe.exec.command
-          value:
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/1
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/2
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/3
+          path: spec.template.spec.containers[0].readinessProbe.tcpSocket.port
+          value: 45450
 
   - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
     documentIndex: 6
@@ -468,11 +440,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: 3
             initialDelaySeconds: x
             periodSeconds: 5
@@ -481,11 +450,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -505,11 +471,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -518,11 +481,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+            tcpSocket:
+              port: 45450
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -583,19 +543,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/11
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/12
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/13
+            tcpSocket:
+              port: 45450
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -604,19 +553,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
           value:
-            exec:
-              command:
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/11
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/12
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/13
+            tcpSocket:
+              port: 45450
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
