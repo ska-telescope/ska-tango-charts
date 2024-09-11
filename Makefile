@@ -36,6 +36,8 @@ PYTHON_VARS_AFTER_PYTEST = --disable-pytest-warnings --timeout=300
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:$(ITANGO_VERSION)
+
 # include OCI Images support
 include .make/oci.mk
 
@@ -53,8 +55,6 @@ include .make/base.mk
 
 # include your own private variables for custom deployment configuration
 -include PrivateRules.mak
-
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:$(ITANGO_VERSION)
 
 # Colour bank https://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
 RED=$(shell tput setaf 1)
