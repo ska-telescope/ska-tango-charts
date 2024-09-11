@@ -170,13 +170,8 @@ spec:
           containerPort: {{ $databaseds_port }}
         {{- if .Values.databaseds.livenessProbe.enabled }}
         readinessProbe:
-          exec:
-            command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+          tcpSocket:
+            port: 10000
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
@@ -185,13 +180,8 @@ spec:
         {{- end }}
         {{- if .Values.databaseds.readinessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+          tcpSocket:
+            port: 10000
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
