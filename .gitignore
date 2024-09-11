@@ -10,5 +10,5 @@ charts/ska-tango-images/charts/*
 charts/tango-base/charts/*
 charts/ska-tango-base/charts/*
 charts/ska-tango-umbrella/charts
-charts/ska-tango-umbrella/Chart.lock
 tests/tango_values.yaml
+manifests.yaml
