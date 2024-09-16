@@ -60,9 +60,9 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'SKA Tango Images'
-copyright = '2018, Stewart Williams'
-author = 'Stewart Williams'
+project = 'SKA Tango Charts'
+copyright = '2024, SKA Observatory'
+author = 'System Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
