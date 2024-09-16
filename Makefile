@@ -99,3 +99,4 @@ k8s-chart-test:
 k8s-pre-test:
 	@echo "k8s-pre-test: setting up tests/values.yaml"
 	cp charts/ska-tango-base/values.yaml tests/tango_values.yaml
+	poetry export --format requirements.txt --output tests/requirements.txt --without-hashes --dev
