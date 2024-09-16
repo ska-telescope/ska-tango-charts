@@ -1,0 +1,123 @@
+image: $SKA_K8S_TOOLS_BUILD_DEPLOY
+
+stages:
+  - lint
+  - build
+  - test
+  - deploy
+  - integration
+  - staging
+  - pages
+  - publish
+  - scan
+
+# Standardised included jobs
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  MINIKUBE: "false"
+  CI_POETRY_VERSION: 1.8.2
+
+# Include CI templates
+include:
+# OCI Images
+# do a custom set of build and publish stages
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
+
+# Python packages build,lint, test and publish
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/python.gitlab-ci.yml'
+
+# Jupyter notebook linting and testing
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/notebook.gitlab-ci.yml'
+
+# Helm Charts
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+
+# Docs pages
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
+
+# .post step finalisers eg: badges
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+
+# k8s steps
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'
+
+# changelog release page
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/release.gitlab-ci.yml'
+
+test-chart-templates:
+  stage: test
+  variables:
+    MINIKUBE: "false"
+  tags:
+  - k8srunner
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  script:
+    - helm plugin install https://github.com/quintush/helm-unittest && helm plugin update unittest
+    - make k8s-chart-test
+    - mkdir -p ./build/reports
+    - mv charts/build/chart_template_tests.xml ./build/reports/chart_template_tests.xml
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/reports/chart_template_tests.xml
+
+python-test:
+  rules:
+    - when: never
+
+# if the pipeline is called from an upstream project (ska-tango-images) 
+# we don't lint, there's no need
+python-lint:
+  rules:
+    - when: never
+
+k8s-test-no-operator:
+  extends: k8s-test
+  variables:
+    KUBE_NAMESPACE: 'ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-no-op'
+    SKA_TANGO_OPERATOR: 'false'
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  environment:
+    name: test/$CI_COMMIT_REF_SLUG-no-op
+    on_stop: stop-k8s-test-no-operator
+    auto_stop_in: 1 minute
+  rules:
+    - exists:
+        - tests/**/*
+
+stop-k8s-test-no-operator:
+  extends: stop-k8s-test
+  when: manual
+  variables:
+    KUBE_NAMESPACE: 'ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-no-op'
+  environment:
+    name: test/$CI_COMMIT_REF_SLUG-no-op
+    action: stop
+
+notebook-lint:
+  rules:
+    - when: never
+
+notebook-test:
+  rules:
+    - when: never
+
+docs-build-rtd:
+  rules:
+    - when: never
