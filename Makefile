@@ -88,6 +88,8 @@ package: helm-pre-publish ## package charts
 	cd ./repository && helm repo index .; \
 	rm -rf ./tmp
 
+helm-pre-build:
+	@rm -f charts/ska-tango-umbrella/Chart.lock charts/ska-tango-base/Chart.lock 
 
 # install helm plugin from https://github.com/quintush/helm-unittest
 k8s-chart-test:
