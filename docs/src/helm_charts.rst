@@ -5,7 +5,7 @@ There are two helm charts available on this repository: one is called ``ska-tang
 There is another helm chart, called ``ska-tango-umbrella``, which is used only for testing purposes.
 
 The ska-tango-base helm chart
--------------------------
+-----------------------------
 
 The ``ska-tango-base`` helm chart is an application chart which defines the basic TANGO ecosystem in kubernetes.
 
@@ -18,7 +18,7 @@ In specific it defines the following k8s services:
 
 
 The ska-tango-util helm chart
--------------------------
+-----------------------------
 
 The ``ska-tango-util`` helm chart is a library chart which helps other application chart defines TANGO device servers.
 
