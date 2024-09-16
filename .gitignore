@@ -15,4 +15,3 @@ manifests.yaml
 MANIFEST.skao.int
 charts/ska-tango-base/MANIFEST.skao.int
 charts/ska-tango-util/MANIFEST.skao.int
-charts/*/Chart.lock

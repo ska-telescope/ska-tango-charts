@@ -19,19 +19,6 @@ variables:
 
 # Include CI templates
 include:
-# OCI Images
-# do a custom set of build and publish stages
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
-
-# Python packages build,lint, test and publish
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/python.gitlab-ci.yml'
-
-# Jupyter notebook linting and testing
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/notebook.gitlab-ci.yml'
-
 # Helm Charts
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
@@ -71,16 +58,6 @@ test-chart-templates:
     reports:
       junit: build/reports/chart_template_tests.xml
 
-python-test:
-  rules:
-    - when: never
-
-# if the pipeline is called from an upstream project (ska-tango-images) 
-# we don't lint, there's no need
-python-lint:
-  rules:
-    - when: never
-
 k8s-test-no-operator:
   extends: k8s-test
   variables:
@@ -109,15 +86,3 @@ stop-k8s-test-no-operator:
   environment:
     name: test/$CI_COMMIT_REF_SLUG-no-op
     action: stop
-
-notebook-lint:
-  rules:
-    - when: never
-
-notebook-test:
-  rules:
-    - when: never
-
-docs-build-rtd:
-  rules:
-    - when: never
