@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "ska-tango-charts"
+version = "0.4.12"
+description = "Helm charts for TANGO k8s deployments"
+authors = ["Matteo Di Carlo <matteo.dicarlo@inaf.it>"]
+readme = "README.md"
+
+[[tool.poetry.source]]
+name = 'ska-nexus'
+url = 'https://artefact.skao.int/repository/pypi-internal/simple'
+
+[[tool.poetry.source]]
+name = "PyPI"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+coverage = "^7.5.1"
+flake8 = "^7.0.0"
+isort = "^5.13.0"
+nbmake = {extras = ["all"], version = "^1.5.0"}
+nbqa = {extras = ["all"], version = "^1.8.0"}
+pylint = "^3.1.0"
+pylint-junit = "^0.3.2"
+pytest = "^8.2.0"
+pytest-bdd = "^7.1.2"
+pytest-cov = "^5.0.0"
+pytest-forked = "^1.6.0"
+pytest-json-report = "^1.5.0"
+pytest-mock = "^3.14.0"
+pytest-repeat = "^0.9.3"
+pytest-timeout = "^2.3.1"
+yamllint = "^1.32.0"
+mysql-connector-python = "8.0.29"
+requests = "^2.32.3"
+mock = "^5.1.0"
+
+[tool.poetry.group.docs.dependencies]
+myst-parser = "^3.0.0"
+Sphinx = "^7.3.0"
+sphinx-rtd-theme = "^2.0.0"
+recommonmark = "^0.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,30 @@
+# Default values for tango-base.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+global:
+  minikube: false
+  tango_host: tango-databaseds:10000
+  operator: true
+  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
+  # sub-system:
+  #   tango-base:
+  #     enabled: false
+  #   archiver:
+  #     enabled: false
+  #   webjive:
+  #     enabled: false
+
+ska-tango-base:
+  itango:
+    enabled: true
+  vnc:
+    enabled: false
+  ingress:
+    enabled: true
+    hostname: tango-base.minikube.local
+  tangodb:
+    use_pv: true
