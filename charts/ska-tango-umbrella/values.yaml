@@ -8,6 +8,8 @@ xauthority: "~/.Xauthority"
 labels:
   app: ska-tango-charts
 
+subsystem: sys-test
+
 global:
   minikube: false
   tango_host: tango-databaseds:10000

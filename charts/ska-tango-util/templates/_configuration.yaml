@@ -4,6 +4,7 @@
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
+{{- $annotations := coalesce .Values.global.annotations .Values.annotations }}
 
 {{- if not .Values.global.operator }}
 ---
@@ -52,8 +53,10 @@ metadata:
     function: deployment
     intent: enabling
     domain: self-configuration
+{{- if $annotations}}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml $annotations | indent 4 }}
+{{- end }}
 data:
 {{ (tpl (.Files.Glob .Values.dsconfig.configuration_file).AsConfig . ) | indent 2  }}
   bootstrap.sh: |
@@ -86,8 +89,10 @@ metadata:
     function: deployment
     intent: enabling
     domain: self-configuration
+{{- if $annotations}}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml $annotations | indent 4 }}
+{{- end }}
 spec:
   ttlSecondsAfterFinished: 3600
   template:

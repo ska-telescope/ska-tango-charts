@@ -19,8 +19,10 @@ metadata:
     function: deployment
     intent: enabling
     domain: self-configuration
+{{- if $annotations}}
   annotations:
 {{ toYaml $annotations | indent 4 }}
+{{- end }}
 data:
   configuration.json: |
     {
