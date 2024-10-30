@@ -5,18 +5,21 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+labels:
+  app: ska-tango-charts
+
 global:
   minikube: false
   tango_host: tango-databaseds:10000
   operator: true
-  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
-  # sub-system:
-  #   tango-base:
-  #     enabled: false
-  #   archiver:
-  #     enabled: false
-  #   webjive:
-  #     enabled: false
+
+dsconfig:
+  configuration_file: data/configuration.json
+  image:
+    registry: harbor.skao.int/production
+    image: ska-tango-images-tango-dsconfig
+    tag: 1.5.13
+    pullPolicy: IfNotPresent
 
 ska-tango-base:
   itango:
@@ -28,3 +31,51 @@ ska-tango-base:
     hostname: tango-base.minikube.local
   tangodb:
     use_pv: true
+  deviceServers:
+    tangotest:
+      command: "/usr/local/bin/TangoTest"
+      instances: ["test"]
+      secrets:
+      - secretPath: groups/ska-dev/system
+        env:
+        - secretKey: test-injection
+          envName: TEST
+          default: "minikube-case"
+
+deviceServersOldVersion:
+  tangotestoldversion:
+    name: tangotest2
+    image:
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-java
+      tag: 9.5.0
+      pullPolicy: IfNotPresent
+    command: "/usr/local/bin/TangoTest"
+    instances: ["test2"]
+    secrets:
+    - secretPath: groups/ska-dev/system
+      env:
+      - secretKey: test-injection
+        envName: TEST
+        default: "minikube-case"
+    resources:
+      requests:
+        cpu: 200m     # 200m = 0.2 CPU
+        memory: 256Mi # 256Mi = 0.25 GB mem
+        ephemeral-storage: 1Gi
+      limits:
+        cpu: 500m     # 500m = 0.5 CPU
+        memory: 512Mi # 512Mi = 0.5 GB mem
+        ephemeral-storage: 1Gi
+    livenessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+    readinessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3

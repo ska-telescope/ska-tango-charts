@@ -1,0 +1,18 @@
+{
+    "servers": {
+        "DataBaseds": {
+            "2": {
+                "DataBase": {
+                    "sys/database/2": {}
+                }
+            }
+        },
+        "TangoTest": {
+            "test2": {
+                "TangoTest": {
+                    "sys/tg_test/2": {}
+                }
+            }
+        }
+    }
+}
