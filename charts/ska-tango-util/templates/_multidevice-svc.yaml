@@ -322,14 +322,14 @@ spec:
 {{- range $secret := $deviceserver.secrets }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- range $env := $secret.env }}
-  - name: {{ $env.envName }}
+        - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
-    value: {{tpl ($env.default | toString) $chart | quote }}
+          value: {{tpl ($env.default | toString) $chart | quote }}
 {{- else }}
-    valueFrom:
-      secretKeyRef:
-        name: {{ $secret_name }}
-        key: {{ $env.secretKey }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ $env.secretKey }}
 {{- end }}
 {{- end }}
 {{- end }}
