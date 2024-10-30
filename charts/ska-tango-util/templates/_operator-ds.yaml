@@ -17,7 +17,7 @@ Parameters:
 {{- $deviceserver := .deviceserver }}
 {{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{- if (.deviceserver.secrets) }}
-{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "kv" }}
+{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- if not $chart.Values.global.minikube }}
 {{- range $secret := .deviceserver.secrets }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name ($secret.secretPath | toString | replace "/" "-" )) }}
