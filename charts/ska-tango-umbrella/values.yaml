@@ -38,7 +38,7 @@ ska-tango-base:
       command: "/usr/local/bin/TangoTest"
       instances: ["test"]
       secrets:
-      - secretPath: groups/ska-dev/system
+      - secretPath: skao-team-system/ska-tango-charts
         env:
         - secretKey: test-injection
           envName: TEST
@@ -55,7 +55,7 @@ deviceServersOldVersion:
     command: "/usr/local/bin/TangoTest"
     instances: ["test2"]
     secrets:
-    - secretPath: groups/ska-dev/system
+    - secretPath: skao-team-system/ska-tango-charts
       env:
       - secretKey: test-injection
         envName: TEST
