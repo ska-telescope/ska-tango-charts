@@ -37,12 +37,13 @@ ska-tango-base:
     tangotest:
       command: "/usr/local/bin/TangoTest"
       instances: ["test"]
+      postStart: '[ "$TEST" == "secret" ]' 
       secrets:
       - secretPath: skao-team-system/ska-tango-charts
         env:
         - secretKey: test-injection
           envName: TEST
-          default: "minikube-case"
+          default: "secret"
 
 deviceServersOldVersion:
   tangotestoldversion:
