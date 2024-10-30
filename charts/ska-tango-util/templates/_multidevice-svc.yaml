@@ -55,11 +55,9 @@ Parameters:
 {{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "kv" }}
 {{- if not $chart.Values.global.minikube }}
 {{- range $secret := $deviceserver.secrets }}
-{{- range $env := $secret.env }}
-{{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name $env.secretKey) }}
-{{- $context := dict "local" $chart "name" $secret_name "secretKey" $env.secretKey "secretPath" $secret.secretPath "secretMount" $secretMount }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
+{{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
 {{ template "ska-tango-util.vault-static-secret-svc.tpl" $context }}
-{{- end}} # range $env := $secret.env
 {{- end}} # range $secret := .deviceserver.secrets
 {{- end}} # if not $chart.Values.global.minikube
 {{- end}} # if (.deviceserver.secrets)
@@ -322,12 +320,12 @@ spec:
 {{- end }}
 {{- if ($deviceserver.secrets) }}
 {{- range $secret := $deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- range $env := $secret.env }}
   - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
     value: {{tpl ($env.default | toString) $chart | quote }}
 {{- else }}
-{{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name $env.secretKey) }}
     valueFrom:
       secretKeyRef:
         name: {{ $secret_name }}
