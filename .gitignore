@@ -16,3 +16,4 @@ MANIFEST.skao.int
 charts/ska-tango-base/MANIFEST.skao.int
 charts/ska-tango-util/MANIFEST.skao.int
 tests/requirements.txt
+Chart.lock
