@@ -37,7 +37,7 @@ ska-tango-base:
     tangotest:
       command: "/usr/local/bin/TangoTest"
       instances: ["test"]
-      postStart: '[ "$TEST" == "secret" ]' 
+      postStart: "echo $TEST | grep secret"
       secrets:
       - secretPath: skao-team-system/ska-tango-charts
         env:

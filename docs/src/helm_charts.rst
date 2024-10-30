@@ -118,7 +118,7 @@ Below there is an example of a values file that can be used with the ska-tango-u
             postStart: "tango_admin --add-property test/motor/1 'LibConfig' 'user=xxx,password='$TEST"
             preStop: "tango_admin --delete-property test/motor/1 'LibConfig'"
             secrets:
-            - secretPath: kv/data/groups/ska-dev/system
+            - secretPath: skao-team-system/ska-tango-charts
               env:
               - secretKey: test-injection
                 envName: TEST
