@@ -31,7 +31,8 @@ In specific it defines the following helm named template:
  - multidevice-svc: it creates a k8s service and a k8s statefulset for a device server tag specified in the values file. If the ``global.operator`` is true then this won't be generated in favour of a DeviceServer k8s type. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_
  - deviceserver-pvc: it optionally creates a volume for the deviceserver when it contains the dictionary `volume`. The subkeys are `name`, `mountPath` and `storage`. See example below.
  - operator: it creates a k8s DeviceServer type of k8s resources. 
- - secret-provider-class: it creates a storage provider class for accessing vault secrets with the `csi provider <https://developer.hashicorp.com/vault/docs/platform/k8s/csi>`_. 
+ - secret-provider-class: (deprecated) it creates a storage provider class for accessing vault secrets with the `csi provider <https://developer.hashicorp.com/vault/docs/platform/k8s/csi>`_. 
+ - vault-static-secret: it creates a VaultStaticSecret type of resources for accessing vault secrets with the `Vault Secret Operator <https://developer.hashicorp.com/vault/tutorials/kubernetes/vault-secrets-operator>`_. 
 
 With the introduction of the `SKA TANGO Operator k8s controller <https://gitlab.com/ska-telescope/ska-tango-operator>`_ the library is also able to generate DeviceServer type of resources. This can be activate by setting the parameter ``global.operator``.
 
@@ -116,11 +117,10 @@ Below there is an example of a values file that can be used with the ska-tango-u
                 mountPath: /firmware
             postStart: "tango_admin --add-property test/motor/1 'LibConfig' 'user=xxx,password='$TEST"
             preStop: "tango_admin --delete-property test/motor/1 'LibConfig'"
-            secretsInjectPath: /mnt/secrets-store
             secrets:
             - secretPath: kv/data/groups/ska-dev/system
               env:
-                secretKey: test-injection
+              - secretKey: test-injection
                 envName: TEST
                 default: "minikube-case"
             extraVolumes:
@@ -143,7 +143,6 @@ The most important fields are the following:
 
     - **intances** : A list of all instances for a device server. For each instance a number of devices can be defined together with the relative properties.
  - **class_properties** : On this field you can list your class properties.
- - **secretsInjectPath**: Path to be mount in the device server containing all secrets. 
  - **secrets**: On this field you can list your secret available in vault. The vault address should be specified in the chart values file `vaultAddress` or in global parameter called `global.vaultAddress`:
    - **secretPath**: path in vault.
    - **envName**: environment variable name to be set in the device server.
