@@ -18,7 +18,7 @@
 {{- range $secret := .deviceserver.secrets }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
-{{ template "ska-tango-util.vault-static-secret-svc.tpl" $context }}
+{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
 
 {{- end}} # range $secret := .deviceserver.secrets
 {{- end}} # if not $chart.Values.global.minikube
