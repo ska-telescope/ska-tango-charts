@@ -12,14 +12,17 @@
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 
-{{ $secret_name := printf "%s-%s" .deviceserver.name "secret" }}
 {{- if (.deviceserver.secrets) }}
+{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- if not $chart.Values.global.minikube }}
----
-{{- $context := dict "local" .local "name" $secret_name "secrets" .deviceserver.secrets }}
-{{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
-{{- end}}
-{{- end}}
+{{- range $secret := .deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
+{{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
+{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
+
+{{- end}} # range $secret := .deviceserver.secrets
+{{- end}} # if not $chart.Values.global.minikube
+{{- end}} # if (.deviceserver.secrets)
 
 {{- if not .local.Values.global.operator }}
 
@@ -79,17 +82,6 @@ spec:
       annotations:
 {{ toYaml $annotations | indent 8 }}
     spec:
-{{- if (.deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-      volumes:
-      - name: secret-volume
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true
-          volumeAttributes:
-            secretProviderClass: {{ $secret_name }}
-{{- end }}
-{{- end }}
       {{ if $chart.Values.dsconfig.configuration_file }}
       serviceAccountName: {{ $chart.Values.subsystem }}-sa-{{ $chart.Release.Name }}
       {{ end }}
@@ -104,7 +96,7 @@ spec:
         args:
           - kubectl wait job --for=condition=complete {{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }} --timeout={{ $kubectl_wait_timeout }}
       {{ end }}
-{{- $dependencies := concat (.deviceserver.depends_on | default list) (.instance.depends_on | default list)}}
+{{- $dependencies := .deviceserver.depends_on | default list }}
 {{- if $dependencies }}
 {{- range $index, $device := $dependencies }}
 {{ if ($device.host) }}
@@ -182,14 +174,6 @@ spec:
           {{- end }}
           - {{ .deviceserver.command | toString }}
           - "{{ .instance | toString }}"
-{{- if (.deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-        volumeMounts:
-        - name: secret-volume
-          mountPath: {{ coalesce .deviceserver.secretsInjectPath "/mnt/secrets-store" }}
-          readOnly: true
-{{- end }}
-{{- end }}
 {{- if or (.deviceserver.postStart) (.deviceserver.preStop)  }}
         lifecycle:
 {{- if .deviceserver.postStart }}
@@ -220,6 +204,7 @@ spec:
 {{- end }}
 {{- if (.deviceserver.secrets) }}
 {{- range $secret := .deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- range $env := $secret.env }}
         - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
@@ -228,7 +213,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $secret_name }}
-              key: {{ $env.envName }}
+              key: {{ $env.secretKey }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -290,47 +275,30 @@ spec:
 {{ $chart.Files.Get $chart.Values.dsconfig.configuration_file | indent 4 }}
 {{- end }}
   command: "{{ .deviceserver.command }}"
-{{- $dependencies := concat (.deviceserver.depends_on | default list) (.instance.depends_on | default list)}}
+{{- $dependencies := concat (.deviceserver.depends_on | default list) }}
 {{- if $dependencies }}
   dependsOn:
 {{- range $index, $device := $dependencies }}
   - "{{ $device.device | toString }}"
 {{- end }}
 {{- end }}
-{{- if or (hasKey .deviceserver "volume") (and (.deviceserver.secrets) (not $chart.Values.global.minikube))}}
+{{- if or (hasKey .deviceserver "volume") (and (not $chart.Values.global.minikube))}}
   volumes:
 {{- if hasKey .deviceserver "volume" }}
   - name: volume-data
     persistentVolumeClaim:
       claimName: {{ .deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" .deviceserver.volume.name $chart.Release.Name) }}
 {{- end }}
-{{- if (.deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-  - name: secret-volume
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: {{ $secret_name }}
-{{- end }}
-{{- end }}
 {{- with .deviceserver.extraVolumes }}
 {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
-{{- if or (hasKey .deviceserver "volume") (and (.deviceserver.secrets) (not $chart.Values.global.minikube)) (.deviceserver.extraVolumeMounts) }}
+{{- if or (hasKey .deviceserver "volume") (and (not $chart.Values.global.minikube)) (.deviceserver.extraVolumeMounts) }}
   volumeMounts:
 {{- with .deviceserver.volume }}
   - name: volume-data
     mountPath: {{ .mountPath }}
     readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
-{{- end }}
-{{- if (.deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-  - name: secret-volume
-    mountPath: {{ coalesce .deviceserver.secretsInjectPath "/mnt/secrets-store" }}
-    readOnly: true
-{{- end }}
 {{- end }}
 {{- with .deviceserver.extraVolumeMounts }}
 {{- . | toYaml | nindent 2 }}
@@ -348,15 +316,16 @@ spec:
 {{- end }}
 {{- if (.deviceserver.secrets) }}
 {{- range $secret := .deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- range $env := $secret.env }}
-  - name: {{ $env.envName }}
+        - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
-    value: {{tpl ($env.default | toString) $chart | quote }}
+          value: {{tpl ($env.default | toString) $chart | quote }}
 {{- else }}
-    valueFrom:
-      secretKeyRef:
-        name: {{ $secret_name }}
-        key: {{ $env.envName }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ $env.secretKey }}
 {{- end }}
 {{- end }}
 {{- end }}

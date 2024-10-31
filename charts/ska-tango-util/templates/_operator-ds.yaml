@@ -16,14 +16,16 @@ Parameters:
 {{- $chart := .local }}
 {{- $deviceserver := .deviceserver }}
 {{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{- $secret_name := printf "%s-%s" $deviceserver_name "secret" }}
 {{- if ($deviceserver.secrets) }}
+{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- if not $chart.Values.global.minikube }}
----
-{{- $context := dict "local" .local "name" $secret_name "secrets" $deviceserver.secrets }}
-{{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
-{{- end}}
-{{- end}}
+{{- range $secret := .deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name ($secret.secretPath | toString | replace "/" "-" )) }}
+{{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
+{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
+{{- end}} # range $secret := .deviceserver.secrets
+{{- end}} # if not $chart.Values.global.minikube
+{{- end}} # if (.deviceserver.secrets)
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- range $instance := $deviceserver.server.instances }}
 {{- $safe_instance := $instance.name | toString | replace "_" "-" }}
@@ -61,16 +63,6 @@ spec:
     persistentVolumeClaim:
       claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
 {{- end }}
-{{- if ($deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-  - name: secret-volume
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: {{ $secret_name }}
-{{- end }}
-{{- end }}
 {{- with $deviceserver.extraVolumes }}
 {{- . | toYaml | nindent 2 }}
 {{- end }}
@@ -81,13 +73,6 @@ spec:
   - name: volume-data
     mountPath: {{ .mountPath }}
     readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
-{{- end }}
-{{- if ($deviceserver.secrets) }}
-{{- if not $chart.Values.global.minikube }}
-  - name: secret-volume
-    mountPath: {{ coalesce $deviceserver.secretsInjectPath "/mnt/secrets-store" }}
-    readOnly: true
-{{- end }}
 {{- end }}
 {{- with $deviceserver.extraVolumeMounts }}
 {{- . | toYaml | nindent 2 }}
@@ -203,6 +188,7 @@ spec:
 {{- end }}
 {{- if ($deviceserver.secrets) }}
 {{- range $secret := $deviceserver.secrets }}
+{{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- range $env := $secret.env }}
   - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
@@ -211,7 +197,7 @@ spec:
     valueFrom:
       secretKeyRef:
         name: {{ $secret_name }}
-        key: {{ $env.envName }}
+        key: {{ $env.secretKey }}
 {{- end }}
 {{- end }}
 {{- end }}
