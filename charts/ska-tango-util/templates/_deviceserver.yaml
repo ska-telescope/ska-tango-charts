@@ -13,7 +13,7 @@
 {{- $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 
 {{- if (.deviceserver.secrets) }}
-{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount .deviceserver.secrets.secretMount "dev" }}
+{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- if not $chart.Values.global.minikube }}
 {{- range $secret := .deviceserver.secrets }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
