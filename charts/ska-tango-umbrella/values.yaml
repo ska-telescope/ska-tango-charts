@@ -56,7 +56,7 @@ deviceServersOldVersion:
     command: "/usr/local/bin/TangoTest"
     instances: ["test2"]
     secrets:
-    - secretPath: skao-team-system/ska-tango-charts
+    - secretPath: kv/data/groups/ska-dev/system
       env:
       - secretKey: test-injection
         envName: TEST
