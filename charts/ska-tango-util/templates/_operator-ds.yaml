@@ -17,15 +17,15 @@ Parameters:
 {{- $deviceserver := .deviceserver }}
 {{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{- if ($deviceserver.secrets) }}
-{{- $secretMount := coalesce $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- if not $chart.Values.global.minikube }}
 {{- range $secret := .deviceserver.secrets }}
+{{- $secretMount := coalesce $secret.secretMount $chart.Values.secretMount $chart.Values.global.secretMount  "dev" }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
 {{ template "ska-tango-util.vault-static-secret.tpl" $context }}
-{{- end}} # range $secret := .deviceserver.secrets
-{{- end}} # if not $chart.Values.global.minikube
-{{- end}} # if (.deviceserver.secrets)
+{{- end }} # range $secret := .deviceserver.secrets
+{{- end }} # if not $chart.Values.global.minikube
+{{- end }} # if (.deviceserver.secrets)
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- range $instance := $deviceserver.server.instances }}
 {{- $safe_instance := $instance.name | toString | replace "_" "-" }}
