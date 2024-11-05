@@ -56,7 +56,7 @@ spec:
 {{- if (.local.Values.global.environment_variables) }}
 {{- range $index, $envvar := .local.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-          value: {{tpl ($envvar.value | toString) $ }}
+          value: {{ tpl ($envvar.value | toString) $ | quote }}
 {{- end }}
 {{- end }}
       containers:
@@ -81,7 +81,7 @@ spec:
 {{- if (.local.Values.global.environment_variables) }}
 {{- range $index, $envvar := .local.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-          value: {{tpl ($envvar.value | toString) $ }}
+          value: {{ tpl ($envvar.value | toString) $ | quote }}
 {{- end }}
 {{- end }}
         volumeMounts:

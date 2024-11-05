@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tango-charts"
-version = "0.4.12"
+version = "0.4.13"
 description = "Helm charts for TANGO k8s deployments"
 authors = ["Matteo Di Carlo <matteo.dicarlo@inaf.it>"]
 readme = "README.md"
