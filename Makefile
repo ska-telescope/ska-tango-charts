@@ -14,7 +14,7 @@ TANGO_HOST ?= tango-databaseds:10000## TANGO_HOST connection to the Tango DS
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 CLUSTER_DOMAIN ?= cluster.local
-SKA_TANGO_OPERATOR ?= false
+SKA_TANGO_OPERATOR ?= true  
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-charts
 CI_ENVIRONMENT_SLUG ?= ska-tango-charts
