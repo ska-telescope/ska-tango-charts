@@ -18,11 +18,11 @@ CI_ENVIRONMENT_SLUG ?= ska-tango-charts
 
 RELEASE_VALUES_FILE ?= $(RELEASE_NAME).$(KUBE_NAMESPACE).values.yml
 ifneq ($(K8S_VALUES_FILES),)
-K8S_CHART_PARAMS ?= $(foreach f,$(K8S_VALUES_FILES),-f $(f))
+K8S_CHART_PARAMS ?= $(foreach f,$(K8S_VALUES_FILES),-f <(envsubst < $(f)))
 ifneq ("$(wildcard $(RELEASE_VALUES_FILE))","")
 $(info Infering environment from release information ...)
-SKA_TANGO_OPERATOR := $(shell jq -r '.global.operator // true' $(RELEASE_VALUES_FILE))
-TANGO_HOST := $(shell jq -r '.global.tango_host // "tango-databaseds:10000"' $(RELEASE_VALUES_FILE))
+SKA_TANGO_OPERATOR := $(shell jq -r '.global.operator' $(RELEASE_VALUES_FILE))
+TANGO_HOST := $(shell jq -r '.global.tango_host' $(RELEASE_VALUES_FILE))
 $(info Setting SKA_TANGO_OPERATOR=$(SKA_TANGO_OPERATOR))
 $(info Setting TANGO_HOST=$(TANGO_HOST))
 endif
