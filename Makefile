@@ -6,31 +6,29 @@ HELM_CHARTS_TO_PUBLISH ?= $(HELM_CHARTS)
 KUBE_NAMESPACE ?= ska-tango-charts#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
 K8S_CHART = ska-tango-umbrella
-MINIKUBE ?= true ## Minikube or not
 ITANGO_VERSION ?= 9.5.0
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-databaseds:10000## TANGO_HOST connection to the Tango DS
-TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
+SKA_TANGO_OPERATOR=true
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
-CLUSTER_DOMAIN ?= cluster.local
-SKA_TANGO_OPERATOR ?= true  
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-charts
 CI_ENVIRONMENT_SLUG ?= ska-tango-charts
 
-K8S_CHART_PARAMS ?= --set global.minikube=$(MINIKUBE) \
-	--set global.exposeDatabaseDS=$(MINIKUBE) \
-	--set global.exposeAllDS=$(MINIKUBE) \
-	--set global.tango_host=$(TANGO_HOST) \
-	--set global.device_server_port=$(TANGO_SERVER_PORT) \
-	--set global.operator=$(SKA_TANGO_OPERATOR) \
-	--set global.cluster_domain=$(CLUSTER_DOMAIN)
+RELEASE_VALUES_FILE ?= $(RELEASE_NAME).$(KUBE_NAMESPACE).values.yml
+ifneq ($(K8S_VALUES_FILES),)
+K8S_CHART_PARAMS ?= $(foreach f,$(K8S_VALUES_FILES),-f $(f))
+ifneq ("$(wildcard $(RELEASE_VALUES_FILE))","")
+$(info Infering environment from release information ...)
+SKA_TANGO_OPERATOR := $(shell jq -r '.global.operator // true' $(RELEASE_VALUES_FILE))
+TANGO_HOST := $(shell jq -r '.global.tango_host // "tango-databaseds:10000"' $(RELEASE_VALUES_FILE))
+$(info Setting SKA_TANGO_OPERATOR=$(SKA_TANGO_OPERATOR))
+$(info Setting TANGO_HOST=$(TANGO_HOST))
+endif
+endif
 
-# K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
-# K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
-
-PYTHON_VARS_BEFORE_PYTEST = SKA_TANGO_OPERATOR=${SKA_TANGO_OPERATOR} PYTHONPATH=${PYTHONPATH}:/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
+PYTHON_VARS_BEFORE_PYTEST = SKA_TANGO_OPERATOR=$(SKA_TANGO_OPERATOR) TANGO_HOST=$(TANGO_HOST) PYTHONPATH=${PYTHONPATH}:/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME)
 
 PYTHON_VARS_AFTER_PYTEST = --disable-pytest-warnings --timeout=300
 
@@ -90,6 +88,10 @@ package: helm-pre-publish ## package charts
 
 helm-pre-build:
 	@rm -f charts/ska-tango-umbrella/Chart.lock charts/ska-tango-base/Chart.lock 
+
+k8s-post-install-chart:
+	@helm get values $(RELEASE_NAME) -n $(KUBE_NAMESPACE) -o json 2>/dev/null > $(RELEASE_VALUES_FILE)
+	@helm get values $(RELEASE_NAME) -n $(KUBE_NAMESPACE)
 
 # install helm plugin from https://github.com/quintush/helm-unittest
 k8s-chart-test:

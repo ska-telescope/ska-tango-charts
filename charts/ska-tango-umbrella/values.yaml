@@ -11,9 +11,13 @@ labels:
 subsystem: sys-test
 
 global:
-  minikube: false
-  tango_host: tango-databaseds:10000
+  cluster_domain: cluster.local
+  minikube: true
+  exposeAllDS: false
+  exposeDatabaseDS: false
   operator: true
+  tango_host: tango-databaseds:10000
+  device_server_port: 45450
 
 dsconfig:
   configuration_file: data/configuration.json

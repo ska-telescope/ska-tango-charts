@@ -16,6 +16,9 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   MINIKUBE: "false"
   CI_POETRY_VERSION: 1.8.2
+  # TODO: Add these to the runner environment variables
+  CLUSTER_DATACENTRE: stfc-techops
+  CLUSTER_ENVIRONMENT: production
 
 # Include CI templates
 include:
@@ -58,11 +61,42 @@ test-chart-templates:
     reports:
       junit: build/reports/chart_template_tests.xml
 
+k8s-test:
+  variables:
+    KUBE_NAMESPACE: 'ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA'
+    K8S_VALUES_FILES: "${ENVIRONMENT_VALUES} ${DEP_STRATEGY_VALUES} ${APP_VALUES}"
+  id_tokens:
+    VAULT_ID_TOKEN:
+      aud: https://gitlab.com
+  secrets:
+    ENVIRONMENT_VALUES:
+      vault: ${CLUSTER_DATACENTRE}/${CLUSTER_ENVIRONMENT}/default/values.yml@dev
+      file: true
+    DEP_STRATEGY_VALUES:
+      vault: shared/default/operator/values.yml@dev
+      file: true
+    APP_VALUES:
+      vault: skao-team-system/ska-tango-charts/values.yml@dev
+      file: true
+
 k8s-test-no-operator:
   extends: k8s-test
   variables:
     KUBE_NAMESPACE: 'ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-no-op'
-    SKA_TANGO_OPERATOR: 'false'
+    K8S_VALUES_FILES: "${ENVIRONMENT_VALUES} ${DEP_STRATEGY_VALUES} ${APP_VALUES}"
+  id_tokens:
+    VAULT_ID_TOKEN:
+      aud: https://gitlab.com
+  secrets:
+    ENVIRONMENT_VALUES:
+      vault: ${CLUSTER_DATACENTRE}/${CLUSTER_ENVIRONMENT}/default/values.yml@dev
+      file: true
+    DEP_STRATEGY_VALUES:
+      vault: shared/default/no-operator/values.yml@dev
+      file: true
+    APP_VALUES:
+      vault: skao-team-system/ska-tango-charts/values.yml@dev
+      file: true
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
