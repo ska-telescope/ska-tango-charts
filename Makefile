@@ -14,7 +14,7 @@ TANGO_HOST ?= tango-databaseds:10000## TANGO_HOST connection to the Tango DS
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 CLUSTER_DOMAIN ?= cluster.local
-SKA_TANGO_OPERATOR ?= false
+SKA_TANGO_OPERATOR ?= true  
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-charts
 CI_ENVIRONMENT_SLUG ?= ska-tango-charts
@@ -30,7 +30,7 @@ K8S_CHART_PARAMS ?= --set global.minikube=$(MINIKUBE) \
 # K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
 # K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
 
-PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=${PYTHONPATH}:/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
+PYTHON_VARS_BEFORE_PYTEST = SKA_TANGO_OPERATOR=${SKA_TANGO_OPERATOR} PYTHONPATH=${PYTHONPATH}:/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
 
 PYTHON_VARS_AFTER_PYTEST = --disable-pytest-warnings --timeout=300
 

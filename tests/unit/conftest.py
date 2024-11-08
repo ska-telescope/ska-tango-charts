@@ -44,7 +44,11 @@ def get_values_file():
 def get_db_config(get_values_file):
     mysql_config = dict()
     try:
-        mysql_config["host"] = "ska-tango-base-" + get_values_file["tangodb"]["component"]
+        operator = os.getenv("SKA_TANGO_OPERATOR", "true")
+        if operator.lower() in ["true"]:
+            mysql_config["host"] = "databaseds-tangodb-tango-databaseds"
+        else:
+            mysql_config["host"] = "ska-tango-base-" + get_values_file["tangodb"]["component"]
         mysql_config["database"] = get_values_file["tangodb"]["db"]["db"]
         mysql_config["user"] = get_values_file["tangodb"]["db"]["user"]
         mysql_config["password"] = get_values_file["tangodb"]["db"]["password"]
