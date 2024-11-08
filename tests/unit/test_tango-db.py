@@ -1,3 +1,4 @@
+import os
 import logging
 import pytest
 from pytest_bdd import scenario, given, when, then, scenarios, parsers
@@ -21,7 +22,12 @@ def getValuesFile(values_file):
 @when(parsers.parse("I extract the DB config in the {device_name}"))
 def getDBConfig(device_name):
     try:
-        pytest.dbHost = 'ska-tango-base-' + pytest.values_list['tangodb']['component']
+        operator = os.getenv("SKA_TANGO_OPERATOR", "true")
+        if operator.lower() in ["true"]:
+            pytest.dbHost = "databaseds-tangodb-tango-databaseds"
+        else:
+            pytest.dbHost = 'ska-tango-base-' + pytest.values_list['tangodb']['component']
+
         pytest.dbName = pytest.values_list['tangodb']['db']['db']
         pytest.dbUser = pytest.values_list['tangodb']['db']['user']
         pytest.dbPassword = pytest.values_list['tangodb']['db']['password']
