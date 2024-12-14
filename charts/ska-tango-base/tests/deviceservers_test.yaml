@@ -320,6 +320,32 @@ tests:
           path: spec.template.spec.containers[0].image
           pattern: my-own-registry/my-own-image:1.2.3
 
+  - it: should use the image overrides specified in the server instance spec, if provided.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          image:
+            registry: my-own-registry
+            image: my-own-image
+            tag: 1.2.3
+          instances: ["testx"]
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "testx"
+              image:
+                registry: override-registry
+                tag: 1.2.3-dev.c1234567
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "xxx/xx/x"
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: override-registry/my-own-image:1.2.3-dev.c1234567
+
   - it: should use the provided image pull policy.
     documentIndex: 6
     set:
