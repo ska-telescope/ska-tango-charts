@@ -222,7 +222,11 @@ spec:
 {{- end }}
       containers:
       - name: device-server
-        image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
+{{- $instance_image := dig "image" dict $instance}}
+{{- $server_image_registry := pluck "registry" $instance_image $deviceserver.image | first}}
+{{- $server_image_name := pluck "image" $instance_image $deviceserver.image | first}}
+{{- $server_image_tag := pluck "tag" $instance_image $deviceserver.image | first}}
+        image: "{{ tpl ($server_image_registry | toString) $chart }}/{{ tpl ($server_image_name | toString) $chart }}:{{ tpl ($server_image_tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
           {{- if not $deviceserver.noretry }}
