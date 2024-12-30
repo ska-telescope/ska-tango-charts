@@ -49,7 +49,7 @@ metadata:
 spec:
   legacycompatibility: {{ if ne $legacy_compatibility true}}false{{ else }}true{{ end }}
   clusterDomain: {{ $cluster_domain }}
-{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
+{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) ($instance.exposeDS)}}
   enableLoadBalancer: true
 {{- end }}
   databaseds: {{ $databaseds_name }}

@@ -83,7 +83,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
-{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
+{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) ($instance.exposeDS)}}
   type: LoadBalancer
 {{- else }}
   type: ClusterIP
