@@ -1,9 +1,9 @@
 dependencies:
 - name: ska-tango-base
   repository: file://../ska-tango-base
-  version: 0.4.14
+  version: 0.4.15
 - name: ska-tango-util
   repository: file://../ska-tango-util
-  version: 0.4.14
-digest: sha256:82b3fefc88afc9090321dc6577f5629381b4359e11c0d395609108e903257c23
-generated: "2024-12-18T12:38:12.840765534+01:00"
+  version: 0.4.15
+digest: sha256:8a0b164bd90aa3114a667bf242280558333bc55e1f59a951ecdfb653492ceb49
+generated: "2025-01-03T08:56:07.910258928+08:00"
