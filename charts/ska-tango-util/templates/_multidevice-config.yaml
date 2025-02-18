@@ -26,8 +26,9 @@ metadata:
 data:
   configuration.json: |
     {
+      {{- with $deviceserver.instances }}
       "servers": {
-        "{{ $deviceserver.server.name }}" : {
+        "{{ $deviceserver.server.name }}": {
           {{- range $index_instance,$instance := $deviceserver.server.instances }}
           {{- if has $instance.name $deviceserver.instances }}
           {{- if hasKey $deviceserver "tmp_start_instance" }},{{end}}
@@ -47,9 +48,11 @@ data:
           {{- end }}
           {{- end }}
         }
-      }{{ if $deviceserver.class_properties }},
+      }{{ if $deviceserver.class_properties }},{{ end }}
+      {{- end }}
+      {{- with $deviceserver.class_properties }}
       "classes": {
-        {{- range $index_class_prop_group, $class_prop_group := $deviceserver.class_properties }}
+        {{- range $index_class_prop_group, $class_prop_group := . }}
         {{- if $index_class_prop_group}},{{end}}
         {{- $ctx := (dict "chart" $chart "props_obj" $class_prop_group) }}
         "{{ $class_prop_group.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
