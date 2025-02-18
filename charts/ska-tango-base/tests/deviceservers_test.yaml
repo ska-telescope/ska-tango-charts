@@ -59,11 +59,10 @@ tests:
             configuration.json: |
               {
                 "servers": {
-                  "TangoTest" : {
+                  "TangoTest": {
                     "test": {
                       "TangoTest": {
-                        "sys/tg_test/1": {
-                        }
+                        "sys/tg_test/1": {}
                       }
                     }
                   }
@@ -707,3 +706,184 @@ tests:
               cpu: xxxm
               memory: xxxMi
               ephemeral-storage: xGi
+
+  - it: should define class properties and class attribute properties
+    documentIndex: 0
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: []
+          server:
+            name: "test-ds"
+            instances: []
+          class_properties:
+          - name: "TangoTest"
+            properties:
+            - name: "testProp"
+              values: ["{{.Chart.Name}} class default"]
+            attribute_properties:
+            - attribute: "adminMode"
+              properties:
+              - name: "__value"
+                values: ["1"]
+    asserts:
+    - equal:
+        path: data["configuration.json"]
+        value: |
+          {
+            "classes": {
+              "TangoTest": {
+                "attribute_properties": {
+                  "adminMode": {
+                    "__value": [
+                      "1"
+                    ]
+                  }
+                },
+                "properties": {
+                  "testProp": [
+                    "ska-tango-base class default"
+                  ]
+                }
+              }
+            }
+          }
+
+  - it: should define device properties and attribute properties
+    documentIndex: 0
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["test1"]
+          server:
+            name: "test-ds"
+            instances:
+            - name: "test1"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+                  properties:
+                  - name: "testProp"
+                    values: ["{{.Chart.Name}} device specific"]
+                  attribute_properties:
+                  - attribute: "adminMode"
+                    properties:
+                    - name: "__value"
+                      values: ["1"]
+    asserts:
+    - equal:
+        path: data["configuration.json"]
+        value: |
+          {
+            "servers": {
+              "test-ds": {
+                "test1": {
+                  "TangoTest": {
+                    "sys/tg_test/1": {
+                      "attribute_properties": {
+                        "adminMode": {
+                          "__value": [
+                            "1"
+                          ]
+                        }
+                      },
+                      "properties": {
+                        "testProp": [
+                          "ska-tango-base device specific"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+  - it: should pass empty properties and attribute_properties to dsconfig if supplied
+    documentIndex: 0
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["test1"]
+          server:
+            name: "test-ds"
+            instances:
+            - name: "test1"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+                  properties: []
+                  attribute_properties: []
+          class_properties:
+          - name: "TangoTest"
+            properties: []
+            attribute_properties:
+            - attribute: "adminMode"
+              properties: []
+    asserts:
+    - equal:
+        path: data["configuration.json"]
+        value: |
+          {
+            "servers": {
+              "test-ds": {
+                "test1": {
+                  "TangoTest": {
+                    "sys/tg_test/1": {
+                      "attribute_properties": {},
+                      "properties": {}
+                    }
+                  }
+                }
+              }
+            },
+            "classes": {
+              "TangoTest": {
+                "attribute_properties": {
+                  "adminMode": {}
+                },
+                "properties": {}
+              }
+            }
+          }
+
+  - it: should omit properties and attribute_properties from dsconfig if omitted
+    documentIndex: 0
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["test1"]
+          server:
+            name: "test-ds"
+            instances:
+            - name: "test1"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+          class_properties:
+          - name: "TangoTest"
+    asserts:
+    - equal:
+        path: data["configuration.json"]
+        value: |
+          {
+            "servers": {
+              "test-ds": {
+                "test1": {
+                  "TangoTest": {
+                    "sys/tg_test/1": {}
+                  }
+                }
+              }
+            },
+            "classes": {
+              "TangoTest": {}
+            }
+          }
