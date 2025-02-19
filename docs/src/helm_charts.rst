@@ -45,6 +45,64 @@ Below there is an example of a values file that can be used with the ska-tango-u
 
 .. code-block:: console
 
+server:
+  instances:
+    - name: "test2"
+      classes:
+      - name: "PowerSupply"
+        devices:
+        - name: "test/powersupply/2"
+          properties:
+          - name: "test"
+            values:
+            - "test2"
+          - name: "poll_rate"
+            values: ["2.5"]
+    - name: "test"
+      classes:
+      - name: "PowerSupply"
+        devices:
+        - name: "test/powersupply/1"
+          properties:
+          - name: "test"
+            values:
+            - "test2"
+          attribute_properties:
+          - attribute: "current"
+            properties:
+            - name: "max_alarm"
+              values: ["9.5"]
+            - name: "description"
+              values: ["a templated attribute property: {{ .Chart.Name }}"]
+      - name: "EventReceiver"
+        devices:
+        - name: "test/eventreceiver/1"
+      - name: "Motor"
+        devices:
+        - name: "test/motor/1"
+          properties:
+          - name: "polled_attr"
+            values:
+            - "PerformanceValue"
+            - "{{ .deviceserver.polling }}"
+          attribute_properties:
+          - attribute: "PerformanceValue"
+            properties:
+            - name: "rel_change"
+              values:
+              - "-1"
+              - "1"
+class_properties:
+  - name: "PowerSupply"
+    properties:
+    - name: "telmodel_source"
+      values: ["{{ .Chart.Name }}"]
+    attribute_properties:
+    - attribute: "current"
+      properties:
+      - name: "max_alarm"
+        values: ["9.0"]
+
     deviceServers:
         theexample:
             name: "theexample-{{.Release.Name}}"
@@ -53,11 +111,11 @@ Below there is an example of a values file that can be used with the ska-tango-u
             instances: ["test"]
             polling: 1000
             entrypoints:
-                - name: "powersupply.PowerSupply"
+              - name: "powersupply.PowerSupply"
                 path: "/app/module_example/powersupply.py"
-                - name: "EventReceiver.EventReceiver"
+              - name: "EventReceiver.EventReceiver"
                 path: "/app/module_example/EventReceiver.py"
-                - name: "Motor.Motor"
+              - name: "Motor.Motor"
                 path: "/app/module_example/Motor.py"
             server:
                 name: "theexample"
@@ -99,12 +157,17 @@ Below there is an example of a values file that can be used with the ska-tango-u
                             - "-1"
                             - "1"
             class_properties:
-                - name: "PowerSupply"
+              - name: "PowerSupply"
                 properties:
-                    - name: "aClassProperty"
+                  - name: "aClassProperty"
                     values: ["67.4", "123"]
-                    - name: "anotherClassProperty"
+                  - name: "anotherClassProperty"
                     values: ["test", "test2"]
+                attribute_properties:
+                  - attribute: "current"
+                    properties:
+                      - name: "max_alarm"
+                        values: ["10.0"]
             depends_on:
                 - device: sys/database/2
             image:
