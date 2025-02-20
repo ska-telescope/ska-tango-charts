@@ -103,39 +103,8 @@ spec:
             "{{ $class.name }}": {
               {{- range $index_device, $device := $class.devices }}
               {{- if $index_device}},{{end}}
-              "{{ $device.name }}": {
-                {{- if $device.properties }}
-                "properties": {
-                  {{- range $index_property, $property := $device.properties }}
-                  {{- if $index_property}},{{end}}
-                  "{{ $property.name }}": [
-                    {{- range $index_value, $value := $property.values }}
-                    {{- if $index_value}},{{end}}
-                    "{{ tpl $value $chart }}"
-                    {{- end }}
-                    ]
-                  {{- end }}
-                }{{ if $device.attribute_properties }},{{ end }}
-                {{- end }}
-                {{- if $device.attribute_properties }}
-                "attribute_properties": {
-                  {{- range $index_attr_prop, $attr_prop := $device.attribute_properties }}
-                  {{- if $index_attr_prop}},{{end}}
-                  "{{ $attr_prop.attribute }}": {
-                    {{- range $index_prop, $prop := $attr_prop.properties }}
-                    {{- if $index_prop}},{{end}}
-                    "{{ $prop.name }}": [
-                    {{- range $index_value, $value := $prop.values }}
-                    {{- if $index_value}},{{end}}
-                    "{{ tpl $value $chart }}"
-                    {{- end }}
-                    ]
-                    {{- end }}
-                  }
-                {{- end }}
-                }
-                {{- end }}
-              }
+              {{- $ctx := (dict "chart" $chart "props_obj" $device) }}
+              "{{ $device.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 14 | trim }}
               {{- end }}
             }
             {{- end }}
@@ -147,19 +116,8 @@ spec:
       "classes": {
         {{- range $index_class_prop_group, $class_prop_group := $deviceserver.class_properties }}
         {{- if $index_class_prop_group}},{{end}}
-          "{{ $class_prop_group.name }}": {
-              "properties": {
-                {{- range $index_class_prop, $class_prop := $class_prop_group.properties }}
-                {{- if $index_class_prop}},{{end}}
-                  "{{ $class_prop.name }}": [
-                    {{- range $index_value, $value := $class_prop.values }}
-                    {{- if $index_value}},{{end}}
-                    "{{ tpl $value $chart }}"
-                    {{- end }}
-                  ]
-                {{- end }}
-              }
-          }
+        {{- $ctx := (dict "chart" $chart "props_obj" $class_prop_group) }}
+        "{{ $class_prop_group.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
         {{- end }}
       }
       {{- end }}
