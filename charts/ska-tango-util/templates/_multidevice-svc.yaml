@@ -150,6 +150,9 @@ spec:
 {{- with $deviceserver.extraVolumes }}
 {{- . | toYaml | nindent 8 }}
 {{- end }}
+{{- with $instance.extraVolumes }}
+{{- . | toYaml | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -281,6 +284,9 @@ spec:
             readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
           {{ end }}
 {{- with $deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 10 }}
+{{- end }}
+{{- with $instance.extraVolumeMounts }}
 {{- . | toYaml | nindent 10 }}
 {{- end }}
         livenessProbe:
