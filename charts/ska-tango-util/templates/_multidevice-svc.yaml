@@ -356,7 +356,7 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
 {{ end }}
-{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
+{{- with (coalesce $instance.nodeSelector $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
