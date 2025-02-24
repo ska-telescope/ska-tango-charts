@@ -60,7 +60,7 @@ spec:
   image: "{{ tpl ($server_image_registry | toString) $chart }}/{{ tpl ($server_image_name | toString) $chart }}:{{ tpl ($server_image_tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
-{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumes)}}
+{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumes) ($instance.extraVolumes)}}
   volumes:
 {{- if hasKey $deviceserver "volume" }}
   - name: volume-data
@@ -70,8 +70,11 @@ spec:
 {{- with $deviceserver.extraVolumes }}
 {{- . | toYaml | nindent 2 }}
 {{- end }}
+{{- with $instance.extraVolumes }}
+{{- . | toYaml | nindent 2 }}
 {{- end }}
-{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumeMounts)}}
+{{- end }}
+{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumeMounts) ($instance.extraVolumeMounts)}}
   volumeMounts:
 {{- with $deviceserver.volume }}
   - name: volume-data
@@ -79,6 +82,9 @@ spec:
     readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
 {{- end }}
 {{- with $deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- with $instance.extraVolumeMounts }}
 {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
@@ -172,7 +178,7 @@ spec:
   securityContext:
     {{- toYaml . | nindent 4 }}
 {{- end }}
-{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
+{{- with (coalesce $instance.nodeSelector $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
 {{- end }}

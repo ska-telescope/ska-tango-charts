@@ -150,6 +150,9 @@ spec:
 {{- with $deviceserver.extraVolumes }}
 {{- . | toYaml | nindent 8 }}
 {{- end }}
+{{- with $instance.extraVolumes }}
+{{- . | toYaml | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -283,6 +286,9 @@ spec:
 {{- with $deviceserver.extraVolumeMounts }}
 {{- . | toYaml | nindent 10 }}
 {{- end }}
+{{- with $instance.extraVolumeMounts }}
+{{- . | toYaml | nindent 10 }}
+{{- end }}
         livenessProbe:
           tcpSocket:
             port: {{ $tango_server_port }}
@@ -350,7 +356,7 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
 {{ end }}
-{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
+{{- with (coalesce $instance.nodeSelector $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
