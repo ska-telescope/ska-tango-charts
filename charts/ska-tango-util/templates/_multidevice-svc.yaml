@@ -360,13 +360,13 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with $chart.Values.affinity }}
+{{- with (coalesce $instance.affinity $deviceserver.affinity $chart.Values.affinity) }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
-{{- with $chart.Values.tolerations }}
+{{- with (coalesce $instance.tolerations $deviceserver.tolerations $chart.Values.tolerations) }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 ---
 {{ end }} ## if has
