@@ -182,14 +182,13 @@ spec:
   nodeSelector:
     {{- toYaml . | nindent 4 }}
 {{- end }}
-{{- with $chart.Values.affinity }}
+{{- with (coalesce $instance.affinity $deviceserver.affinity $chart.Values.affinity) }}
   affinity:
     {{- toYaml . | nindent 4 }}
 {{- end }}
-{{- with $chart.Values.tolerations }}
+{{- with (coalesce $instance.tolerations $deviceserver.tolerations $chart.Values.tolerations) }}
   tolerations:
     {{- toYaml . | nindent 4 }}
-
 {{- end }}
 {{- end }} ## if has
 {{- end }} # range instances

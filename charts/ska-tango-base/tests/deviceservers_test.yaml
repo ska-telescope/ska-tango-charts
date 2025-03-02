@@ -887,3 +887,38 @@ tests:
               "TangoTest": {}
             }
           }
+
+  - it: should support setting k8s config like tolerations at DS and DS instance level
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["test1", "test2"]
+          tolerations:
+          - key: "ds-toleration"
+            operator: "Exists"
+          server:
+            name: "test-ds"
+            instances:
+            - name: "test1"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+            - name: "test2"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/2"
+              tolerations:
+              - key: "instance-toleration"
+                operator: "Exists"
+    asserts:
+      - documentIndex: 6
+        equal:
+          path: spec.template.spec.tolerations[0].key
+          value: "ds-toleration"
+      - documentIndex: 8
+        equal:
+          path: spec.template.spec.tolerations[0].key
+          value: "instance-toleration"
