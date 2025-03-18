@@ -1,7 +1,7 @@
 {{ define "ska-tango-util.multidevice-job.tpl" }}
-{{- template "ska-tango-util.0.4.17.multidevice-job.tpl" $ }}
+{{- template "ska-tango-util.0.4.18.multidevice-job.tpl" $ }}
 {{- end}}
-{{ define "ska-tango-util.0.4.17.multidevice-job.tpl" }}
+{{ define "ska-tango-util.0.4.18.multidevice-job.tpl" }}
 
 {{- if not .local.Values.global.operator }}
 

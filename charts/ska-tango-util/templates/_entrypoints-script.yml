@@ -5,9 +5,9 @@ Parameters:
 - DEBUG (number: activate debugpy at this port; leave empty otherwise)
 */}}
 {{- define "ska-tango-util.entrypoints-script.tpl" }}
-{{- template "ska-tango-util.0.4.17.entrypoints-script.tpl" $ }}
+{{- template "ska-tango-util.0.4.18.entrypoints-script.tpl" $ }}
 {{- end}}
-{{- define "ska-tango-util.0.4.17.entrypoints-script.tpl" }}
+{{- define "ska-tango-util.0.4.18.entrypoints-script.tpl" }}
 #!/usr/bin/env python
 
 import importlib

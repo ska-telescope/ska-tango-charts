@@ -1,7 +1,7 @@
 {{- define "ska-tango-util.configuration.tpl" -}}
-{{- template "ska-tango-util.0.4.17.configuration.tpl" $ }}
+{{- template "ska-tango-util.0.4.18.configuration.tpl" $ }}
 {{- end}}
-{{- define "ska-tango-util.0.4.17.configuration.tpl" -}}
+{{- define "ska-tango-util.0.4.18.configuration.tpl" -}}
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base" .Release.Name }}
 
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}

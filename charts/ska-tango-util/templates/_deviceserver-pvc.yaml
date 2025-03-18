@@ -18,9 +18,9 @@ Parameters are:
 
 */}}
 {{- define "ska-tango-util.deviceserver-pvc.tpl" }}
-{{- template "ska-tango-util.0.4.17.deviceserver-pvc.tpl" $ }}
+{{- template "ska-tango-util.0.4.18.deviceserver-pvc.tpl" $ }}
 {{- end}}
-{{- define "ska-tango-util.0.4.17.deviceserver-pvc.tpl" }}
+{{- define "ska-tango-util.0.4.18.deviceserver-pvc.tpl" }}
 {{- /* replace with "if and .volume (not .volume.existingClaimName)" for Helm >= 3.10 */}}
 {{- if .volume }}
 {{- if not .volume.existingClaimName }}
