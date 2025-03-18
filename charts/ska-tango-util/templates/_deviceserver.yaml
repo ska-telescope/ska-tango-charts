@@ -1,4 +1,7 @@
 {{ define "ska-tango-util.deviceserver.tpl" }}
+{{- template "ska-tango-util.0.4.17.deviceserver.tpl" $ }}
+{{- end}}
+{{- define "ska-tango-util.0.4.17.deviceserver.tpl" }}
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
@@ -18,7 +21,7 @@
 {{- $secretMount := coalesce $secret.secretMount $chart.Values.secretMount $chart.Values.global.secretMount "dev" }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $.deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
-{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
+{{ template "ska-tango-util.0.4.17.vault-static-secret.tpl" $context }}
 
 {{- end }} # range $secret := .deviceserver.secrets
 {{- end }} # if not $chart.Values.global.minikube

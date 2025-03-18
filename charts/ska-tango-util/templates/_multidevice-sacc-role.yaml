@@ -1,4 +1,7 @@
 {{ define "ska-tango-util.multidevice-sacc-role.tpl" }}
+{{- template "ska-tango-util.0.4.17.multidevice-sacc-role.tpl" $ }}
+{{- end}}
+{{ define "ska-tango-util.0.4.17.multidevice-sacc-role.tpl" }}
 {{- if not .local.Values.global.operator }}
 
 ---

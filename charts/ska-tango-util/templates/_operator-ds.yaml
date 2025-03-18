@@ -7,6 +7,9 @@ Parameters:
 - instance (of the device server)
 */}}
 {{ define "ska-tango-util.operator-svc.tpl" }}
+{{- template "ska-tango-util.0.4.17.operator-svc.tpl" $ }}
+{{- end}}
+{{ define "ska-tango-util.0.4.17.operator-svc.tpl" }}
 {{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{- $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
@@ -22,7 +25,7 @@ Parameters:
 {{- $secretMount := coalesce $secret.secretMount $chart.Values.secretMount $chart.Values.global.secretMount  "dev" }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver_name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
-{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
+{{ template "ska-tango-util.0.4.17.vault-static-secret.tpl" $context }}
 {{- end }} # range $secret := .deviceserver.secrets
 {{- end }} # if not $chart.Values.global.minikube
 {{- end }} # if (.deviceserver.secrets)
@@ -110,7 +113,7 @@ spec:
               {{- range $index_device, $device := $class.devices }}
               {{- if $index_device}},{{end}}
               {{- $ctx := (dict "chart" $chart "props_obj" $device) }}
-              "{{ $device.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 14 | trim }}
+              "{{ $device.name }}": {{ include "ska-tango-util.0.4.17.dsconfig-properties.tpl" $ctx | indent 14 | trim }}
               {{- end }}
             }
             {{- end }}
@@ -123,7 +126,7 @@ spec:
         {{- range $index_class_prop_group, $class_prop_group := $deviceserver.class_properties }}
         {{- if $index_class_prop_group}},{{end}}
         {{- $ctx := (dict "chart" $chart "props_obj" $class_prop_group) }}
-        "{{ $class_prop_group.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
+        "{{ $class_prop_group.name }}": {{ include "ska-tango-util.0.4.17.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
         {{- end }}
       }
       {{- end }}
@@ -134,7 +137,7 @@ spec:
 {{- else }}
   script: |
 {{- $context := dict "deviceserver" $deviceserver "DEBUG" $chart.Values.global.DEBUG }}
-{{- include "ska-tango-util.entrypoints-script.tpl" $context | nindent 4 }}
+{{- include "ska-tango-util.0.4.17.entrypoints-script.tpl" $context | nindent 4 }}
 {{- end }}
 {{- $dependencies := concat ($deviceserver.depends_on | default list) ($instance.depends_on | default list)}}
 {{- if $dependencies }}

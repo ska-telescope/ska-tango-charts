@@ -1,4 +1,7 @@
 {{ define "ska-tango-util.dsconfig-properties.tpl" -}}
+{{- template "ska-tango-util.0.4.17.dsconfig-properties.tpl" $ }}
+{{- end}}
+{{ define "ska-tango-util.0.4.17.dsconfig-properties.tpl" -}}
 {{- $out := dict }}
 
 {{- if hasKey $.props_obj "properties" }}

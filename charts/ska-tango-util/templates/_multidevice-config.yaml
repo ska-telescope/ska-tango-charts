@@ -1,4 +1,7 @@
 {{ define "ska-tango-util.multidevice-config.tpl" }}
+{{- template "ska-tango-util.0.4.17.multidevice-config.tpl" $ }}
+{{- end}}
+{{ define "ska-tango-util.0.4.17.multidevice-config.tpl" }}
 {{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
 {{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{- $deviceserver := .deviceserver }}
@@ -40,7 +43,7 @@ data:
               {{- range $index_device, $device := $class.devices }}
               {{- if $index_device}},{{end}}
               {{- $ctx := (dict "chart" $chart "props_obj" $device) }}
-              "{{ $device.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 14 | trim }}
+              "{{ $device.name }}": {{ include "ska-tango-util.0.4.17.dsconfig-properties.tpl" $ctx | indent 14 | trim }}
               {{- end }}
             }
             {{- end }}
@@ -55,7 +58,7 @@ data:
         {{- range $index_class_prop_group, $class_prop_group := . }}
         {{- if $index_class_prop_group}},{{end}}
         {{- $ctx := (dict "chart" $chart "props_obj" $class_prop_group) }}
-        "{{ $class_prop_group.name }}": {{ include "ska-tango-util.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
+        "{{ $class_prop_group.name }}": {{ include "ska-tango-util.0.4.17.dsconfig-properties.tpl" $ctx | indent 8 | trim }}
         {{- end }}
       }
       {{- end }}
@@ -79,6 +82,6 @@ data:
     fi
   {{ $deviceserver.server.name }}.py: |
 {{- $context := dict "deviceserver" $deviceserver "DEBUG" $chart.Values.global.DEBUG }}
-{{- include "ska-tango-util.entrypoints-script.tpl" $context | nindent 4}}
+{{- include "ska-tango-util.0.4.17.entrypoints-script.tpl" $context | nindent 4}}
 {{- end }}
 {{- end }} # multidevice-config.tpl
