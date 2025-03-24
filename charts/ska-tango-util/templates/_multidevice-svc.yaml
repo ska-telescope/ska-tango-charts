@@ -7,6 +7,9 @@ Parameters:
 - instance (of the device server)
 */}}
 {{ define "ska-tango-util.multidevice-svc.tpl" }}
+{{- template "ska-tango-util.0.4.18.multidevice-svc.tpl" $ }}
+{{- end}}
+{{ define "ska-tango-util.0.4.18.multidevice-svc.tpl" }}
 
 {{- if not .local.Values.global.operator }}
 
@@ -57,7 +60,7 @@ Parameters:
 {{- $secretMount := coalesce $secret.secretMount $chart.Values.global.secretMount $chart.Values.secretMount "dev" }}
 {{- $secret_name := trunc -63 (printf "%s-%s" $deviceserver.name ($secret.secretPath | toString | replace "/" "-" )) }}
 {{- $context := dict "local" $chart "name" $secret_name "secretKeys" $secret.env "secretPath" $secret.secretPath "secretMount" $secretMount }}
-{{ template "ska-tango-util.vault-static-secret.tpl" $context }}
+{{ template "ska-tango-util.0.4.18.vault-static-secret.tpl" $context }}
 {{- end }} # range $secret := .deviceserver.secrets
 {{- end }} # if not $chart.Values.global.minikube
 {{- end }} # if (.deviceserver.secrets)
@@ -376,7 +379,7 @@ spec:
 {{ else }} ## else operator
 
 {{- $context := dict "name" .name "deviceserver" .deviceserver "image" .image "local" .local }}
-{{ template "ska-tango-util.operator-svc.tpl" $context }}
+{{ template "ska-tango-util.0.4.18.operator-svc.tpl" $context }}
 
 {{ end }}
 {{ end }} # multidevice-svc.tpl
